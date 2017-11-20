@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.bignerdranch.android.beatbox.databinding.FragmentBeatBoxBinding;
 import com.bignerdranch.android.beatbox.databinding.ListItemSoundBinding;
@@ -22,6 +24,9 @@ import java.util.List;
 public class BeatBoxFragment extends Fragment {
 
     private BeatBox mBeatBox;
+    private TextView mSeekTextView;
+    private SeekBar mSeekBar;
+    private int mPlaybackSpeed;
 
     public static BeatBoxFragment newInstance() {
         return new BeatBoxFragment();
@@ -42,6 +47,32 @@ public class BeatBoxFragment extends Fragment {
 
         binding.recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         binding.recyclerView.setAdapter(new SoundAdapter(mBeatBox.getSounds()));
+
+        mSeekBar = (SeekBar) binding.getRoot().findViewById(R.id.playback_speed_bar);
+        mSeekTextView = (TextView) binding.getRoot().findViewById(R.id.playback_speed_title);
+        mSeekTextView.setText(getString(R.string.playback_speed, 100) + "%");
+        mBeatBox.setPlaybackSpeed(100);
+        mSeekBar.setProgress(100);
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mPlaybackSpeed = i;
+                mBeatBox.setPlaybackSpeed(mPlaybackSpeed);
+                int speed = 20 + (int)((float)mPlaybackSpeed * .8f);
+                mSeekTextView.setText(getString(R.string.playback_speed, speed) + "%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         return binding.getRoot();
     }
